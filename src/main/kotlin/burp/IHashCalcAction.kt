@@ -1,5 +1,6 @@
 package burp
 
-fun interface IHashCalcAction {
+interface IHashCalcAction {
   fun updateKey(key: String)
+  fun updateSalt(salt: String)
 }

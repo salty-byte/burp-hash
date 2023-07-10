@@ -7,9 +7,14 @@ import utils.JsonUtils
 class HashCalcHandler(private val callbacks: IBurpExtenderCallbacks) : ISessionHandlingAction,
   IHashCalcAction {
   private var key: String = "hash"
+  private var salt: String = ""
 
   override fun updateKey(key: String) {
     this.key = key
+  }
+
+  override fun updateSalt(salt: String) {
+    this.salt = salt
   }
 
   override fun getActionName(): String {
@@ -32,7 +37,7 @@ class HashCalcHandler(private val callbacks: IBurpExtenderCallbacks) : ISessionH
       val json = requestBytes.sliceArray(bodyOffset until requestBytes.size).decodeToString()
       val targetJson = JsonUtils.removeParam(json, key)
       val valuesStr = JsonUtils.valuesString(targetJson)
-      val hash = HashUtils.calcSha256(valuesStr)
+      val hash = HashUtils.calcSha256(valuesStr + salt)
       val updatedJson = JsonUtils.addParam(json, key, hash)
       currentRequest.request = helpers.buildHttpMessage(
         requestInfo.headers,
