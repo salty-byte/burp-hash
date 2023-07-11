@@ -24,20 +24,21 @@ class JsonUtils {
       return Json.encodeToString(element.minus(key))
     }
 
-    fun values(element: JsonElement): List<String> {
+    fun values(element: JsonElement, skips: List<String> = listOf()): List<String> {
       val list = mutableListOf<String>()
-      element.jsonObject.values
-        .forEach { value ->
+      element.jsonObject.entries
+        .filter { !skips.contains(it.key) }
+        .forEach { (_, value) ->
           try {
             value.jsonArray.forEach {
-              list.addAll(values(it))
+              list.addAll(values(it, skips))
             }
           } catch (_: IllegalArgumentException) {
             // do nothing
           }
 
           try {
-            list.addAll(values(value.jsonObject))
+            list.addAll(values(value.jsonObject, skips))
           } catch (_: IllegalArgumentException) {
             // do nothing
           }
@@ -51,8 +52,8 @@ class JsonUtils {
       return list
     }
 
-    fun valuesString(json: String): String {
-      val values = values(Json.parseToJsonElement(json))
+    fun valuesString(json: String, skips: List<String> = listOf()): String {
+      val values = values(Json.parseToJsonElement(json), skips)
       return values.joinToString(separator = "")
     }
   }

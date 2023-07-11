@@ -37,6 +37,32 @@ class JsonUtilsTest {
   }
 
   @Test
+  fun valuesWithoutSkipParameters() {
+    val json = """
+    {
+        "param_a": {
+            "id": 1,
+            "name": "test"
+        },
+        "param_b": [
+            {
+                "id": "111",
+                "title": "apple"
+            },
+            {
+                "id": "112",
+                "title": "test"
+            }
+        ]
+    }
+    """.trimIndent()
+    val values = JsonUtils.values(Json.parseToJsonElement(json), listOf("id", "name"))
+    assertEquals(2, values.size)
+    assertEquals("apple", values[0])
+    assertEquals("test", values[1])
+  }
+
+  @Test
   fun valuesToString() {
     val json = """
     {
@@ -59,6 +85,32 @@ class JsonUtilsTest {
     assertEquals(
       "1test111apple112test",
       JsonUtils.valuesString(json)
+    )
+  }
+
+  @Test
+  fun valuesToStringWithoutSkipParameters() {
+    val json = """
+    {
+        "param_a": {
+            "id": 1,
+            "name": "test"
+        },
+        "param_b": [
+            {
+                "id": "111",
+                "title": "apple"
+            },
+            {
+                "id": "112",
+                "title": "test"
+            }
+        ]
+    }
+    """.trimIndent()
+    assertEquals(
+      "1test111112",
+      JsonUtils.valuesString(json, listOf("title"))
     )
   }
 

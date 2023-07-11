@@ -8,6 +8,7 @@ class HashCalcHandler(private val callbacks: IBurpExtenderCallbacks) : ISessionH
   IHashCalcAction {
   private var key: String = "hash"
   private var salt: String = ""
+  private var skips: List<String> = listOf()
 
   override fun updateKey(key: String) {
     this.key = key
@@ -15,6 +16,10 @@ class HashCalcHandler(private val callbacks: IBurpExtenderCallbacks) : ISessionH
 
   override fun updateSalt(salt: String) {
     this.salt = salt
+  }
+
+  override fun updateSkips(skips: List<String>) {
+    this.skips = skips
   }
 
   override fun getActionName(): String {
@@ -36,7 +41,7 @@ class HashCalcHandler(private val callbacks: IBurpExtenderCallbacks) : ISessionH
       val requestBytes = currentRequest.request
       val json = requestBytes.sliceArray(bodyOffset until requestBytes.size).decodeToString()
       val targetJson = JsonUtils.removeParam(json, key)
-      val valuesStr = JsonUtils.valuesString(targetJson)
+      val valuesStr = JsonUtils.valuesString(targetJson, skips)
       val hash = HashUtils.calcSha256(valuesStr + salt)
       val updatedJson = JsonUtils.addParam(json, key, hash)
       currentRequest.request = helpers.buildHttpMessage(

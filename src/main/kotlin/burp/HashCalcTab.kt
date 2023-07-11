@@ -11,7 +11,7 @@ class HashCalcTab(callbacks: IHashCalcAction) : ITab {
 
   init {
     component = JPanel()
-    val targetLabel = JLabel("Target Parameter Name: ")
+    val targetLabel = JLabel("Target parameter: ")
     targetLabel.horizontalAlignment = JLabel.RIGHT
     val targetTextField = JTextField("hash", 100)
     targetTextField.document.addDocumentListener(
@@ -25,6 +25,14 @@ class HashCalcTab(callbacks: IHashCalcAction) : ITab {
     saltTextField.document.addDocumentListener(
       IUpdateDocumentListener { _ ->
         callbacks.updateSalt(saltTextField.text)
+      }
+    )
+    val skipLabel = JLabel("Skip parameters: ")
+    skipLabel.horizontalAlignment = JLabel.RIGHT
+    val skipTextArea = JTextArea(10, 100)
+    skipTextArea.document.addDocumentListener(
+      IUpdateDocumentListener { _ ->
+        callbacks.updateSkips(skipTextArea.text.split("\n"))
       }
     )
 
@@ -50,6 +58,15 @@ class HashCalcTab(callbacks: IHashCalcAction) : ITab {
     gbc.weightx = 1.0
     gbc.insets = Insets(10, 5, 0, 20)
     component.add(saltTextField, gbc)
+    gbc.gridx = 0
+    gbc.gridy = 2
+    gbc.weightx = 0.0
+    gbc.insets = Insets(10, 20, 0, 5)
+    component.add(skipLabel, gbc)
+    gbc.gridx++
+    gbc.weightx = 1.0
+    gbc.insets = Insets(10, 5, 0, 20)
+    component.add(skipTextArea, gbc)
     gbc.gridy++
     gbc.weighty = 1.0
     component.add(JPanel(), gbc)
